@@ -10,6 +10,40 @@
 #define FILENAME "notes.txt""
 #define MAX_LINE 1024
 
+void usage(const char *prog){
+    fprintf(stderr, "Usage:\n"
+            " %s add \"your note\"\n"
+            " %s list\n",
+            prog, prog);
+    exit(1);
+}
+///////////////////////////////////////////////////////////
+
+void add_note(const char *text){
+    //write to the note
+    int fd = open(FILENAME,O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+    
+    if(fd<0){ perror("open to add"); exit(1); } //error
+
+    //write the text
+    size_t len = strlen(text);
+    if (write(fd,text,len)!= (ssize_t)len){
+        perror("write note");
+        close(fd);
+        exit(1);
+    }
+
+    //newline
+    if (write(fd, "\n",1)!=1){
+        perror("write new line");
+        close(fd);
+        exit(1);
+    }
+
+    close(fd);
+    printf("note added\n");
+
+}
 
 
 
