@@ -4,10 +4,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <string.h>
 
 
-
-#define FILENAME "notes.txt""
+#define FILENAME "notes.txt"
 #define MAX_LINE 1024
 
 void usage(const char *prog){
@@ -44,11 +44,38 @@ void add_note(const char *text){
     printf("note added\n");
 
 }
+///////////////////////////////////////////////////////////
 
+void list_notes(void){
+    //read-only
+    int fd = open(FILENAME , O_RDONLY);
 
+    if(fd<0){
+        perror("open notes");
+        exit(1);
+    }
 
+    //read and output the data
+    char buf[MAX_LINE];
+    ssize_t n;
 
+    while((n=read(fd,buf,sizeof(buf)))>0){
+        if(write(STDOUT_FILENO,buf,n)!=n){
+            perror("write to stdout");
+            close(fd);
+            exit(1);
+        }
+    }
+    if(n<0){
+        perror("read notes");
+        close(fd);
+        exit(1);
+    }
 
+    close(fd);
+}
+
+//////////////////////////////////////////////////////////
 
 
 
